@@ -1,15 +1,30 @@
-import React, { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useState } from "react"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 import litData from "./data/PIAAC_County_Indicators_of_Adult_Literacy_and_Numeracy.geojson"
-//import stateData from "./data/gz_2010_us_040_00_5m.json"
+import LayerToggle from "./components/LayerToggle"
+import "./App.css"
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN
 
 
 const App = () => {
+  const options = [
+    {
+      name: 'Literacy',
+      description: 'Average PIAAC Literacy score',
+      property: 'Lit_A',
+    },
+    {
+      name: 'Numeracy',
+      description: 'Average PIAAC Numeracy score',
+      property: 'Num_A',
+    }
+  ];
 
-  const mapContainer = useRef()
+  const mapContainer = useRef(null);
+  const [active, setActive] = useState(options[0]);
+  const [map , setMap ]  = useState(null);
 
   useEffect(() => {
 
@@ -25,7 +40,7 @@ const App = () => {
       map.addSource("lit-source", {
         type: "geojson",
         data: litData
-      })
+      });
 
       map.addLayer({
         'id': 'lit-layer',
@@ -47,7 +62,7 @@ const App = () => {
         'fill-outline-color': 'rgba(0, 0, 0, 1)',
         'fill-opacity': 0.8
         }
-        });
+      });
 
       map.addLayer({
         'id': 'num-layer',
@@ -69,9 +84,13 @@ const App = () => {
         'fill-outline-color': 'rgba(0, 0, 0, 1)',
         'fill-opacity': 0.8
         }
-        });
+      });
 
-    })
+      setMap(map);
+
+    });
+
+
 
     map.on('click', 'lit-layer', (e) => {
       const lit_info = e.features[0]
@@ -119,63 +138,33 @@ const App = () => {
       map.getCanvas().style.cursor = '';
     });
 
-    map.on('idle', () => {
-      // If these two layers were not added to the map, abort
-      if (!map.getLayer('contours') || !map.getLayer('museums')) {
-        return;
-      }
-       
-      // Enumerate ids of the layers.
-      const toggleableLayerIds = ['contours', 'museums'];
-       
-      // Set up the corresponding toggle button for each layer.
-      for (const id of toggleableLayerIds) {
-      // Skip layers that already have a button set up.
-        if (document.getElementById(id)) {
-          continue;
-        }
-       
-      // Create a link.
-        const link = document.createElement('a');
-        link.id = id;
-        link.href = '#';
-        link.textContent = id;
-        link.className = 'active';
-       
-      // Show or hide layer when the toggle is clicked.
-        link.onclick = function (e) {
-          const clickedLayer = this.textContent;
-          e.preventDefault();
-          e.stopPropagation();
-       
-          const visibility = map.getLayoutProperty(
-          clickedLayer,
-          'visibility'
-          );
-       
-      // Toggle layer visibility by changing the layout object's visibility property.
-          if (visibility === 'visible') {
-            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
-            this.className = '';
-          } else {
-            this.className = 'active';
-            map.setLayoutProperty(
-              clickedLayer,
-              'visibility',
-              'visible'
-            );
-          }
-        };
-       
-        const layers = document.getElementById('menu');
-        layers.appendChild(link);
-      }
-    });   
+    return () => map.remove();
+  }, []);
 
-    return () => map.remove()
-  }, [])
-  return <div ref={mapContainer} style={{ width: "100%", height: "100vh" }} />
+   
+  const changeState = i => {
+    setActive(options[i]);
 
+    if (options[i].name === 'Numeracy'){
+      map.setLayoutProperty('lit-layer', 'visibility', 'none')
+      map.setLayoutProperty('num-layer', 'visibility', 'visible')
+    } else {
+      map.setLayoutProperty('lit-layer', 'visibility', 'visible')
+      map.setLayoutProperty('num-layer', 'visibility', 'none')
+    }
+
+  };
+
+  return (
+    <div>
+      <div ref={mapContainer} style={{ width: "100%", height: "100vh" }} />
+      <LayerToggle
+        options={options}
+        property={active.property}
+        changeState={changeState}
+      />
+    </div>
+  )
 }
 
 
