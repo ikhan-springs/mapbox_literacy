@@ -5,6 +5,8 @@ import litData from "./data/PIAAC_County_Indicators_of_Adult_Literacy_and_Numera
 import LayerToggle from "./components/LayerToggle"
 import "./App.css"
 
+//NEED TO SET UP A ".env.local" FILE WITH THE "REACT_APP_MAPBOX_TOKEN" VARIABLE INITIALIZED TO YOUR API KEY!!!
+//Otherwise the app is just gonna be white
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN
 
 
@@ -28,6 +30,7 @@ const App = () => {
 
   useEffect(() => {
 
+    //creates a temporary map object
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/elpepino/ckv9r28qh8v6a15phamwis4jw',
@@ -37,11 +40,13 @@ const App = () => {
     
     map.on("load", () => {
 
+      //adds the file in the data folder for use by the map
       map.addSource("lit-source", {
         type: "geojson",
         data: litData
       });
 
+      //adds the literacy layer on the map, visible by default
       map.addLayer({
         'id': 'lit-layer',
         'type': 'fill',
@@ -64,6 +69,7 @@ const App = () => {
         }
       });
 
+      //adds the numeracy layer on the map, invisible by default
       map.addLayer({
         'id': 'num-layer',
         'type': 'fill',
@@ -90,8 +96,7 @@ const App = () => {
 
     });
 
-
-
+    //creates a pop up on the literacy layer map with state, county, and education levels
     map.on('click', 'lit-layer', (e) => {
       const lit_info = e.features[0]
 
@@ -107,6 +112,7 @@ const App = () => {
       .addTo(map);
     });
     
+    //creates a popup on the numeracy layer map with state, county, and education levels
     map.on('click', 'num-layer', (e) => {
       const lit_info = e.features[0]
 
@@ -122,6 +128,7 @@ const App = () => {
       .addTo(map);
     });
 
+    //mouse effects for the literacy layer
     map.on('mouseenter', 'lit-layer', () => {
       map.getCanvas().style.cursor = 'pointer';
     });
@@ -130,6 +137,7 @@ const App = () => {
       map.getCanvas().style.cursor = '';
     });
 
+    //mouse effects for the numeracy layer
     map.on('mouseenter', 'num-layer', () => {
       map.getCanvas().style.cursor = 'pointer';
     });
@@ -141,7 +149,7 @@ const App = () => {
     return () => map.remove();
   }, []);
 
-   
+  //This change state variable is used to toggle visibility of the layers
   const changeState = i => {
     setActive(options[i]);
 
@@ -155,6 +163,7 @@ const App = () => {
 
   };
 
+  //returns the map object and puts the layer toggle button on the app
   return (
     <div>
       <div ref={mapContainer} style={{ width: "100%", height: "100vh" }} />
