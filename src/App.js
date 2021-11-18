@@ -4,6 +4,8 @@ import "mapbox-gl/dist/mapbox-gl.css"
 import litData from "./data/PIAAC_County_Indicators_of_Adult_Literacy_and_Numeracy.geojson"
 import LayerToggle from "./components/LayerToggle"
 import "./App.css"
+import Legend from "./components/Legend"
+
 
 //NEED TO SET UP A ".env.local" FILE WITH THE "REACT_APP_MAPBOX_TOKEN" VARIABLE INITIALIZED TO YOUR API KEY!!!
 //Otherwise the app is just gonna be white
@@ -81,7 +83,7 @@ const App = () => {
         'fill-color': [
           "interpolate",
           ["linear"],
-          ["get", "Lit_A"],
+          ["get", "Num_A"],
           171.9,
           "#000000",
           292.9,
@@ -149,6 +151,8 @@ const App = () => {
     return () => map.remove();
   }, []);
 
+ 
+
   //This change state variable is used to toggle visibility of the layers
   const changeState = i => {
     setActive(options[i]);
@@ -166,12 +170,14 @@ const App = () => {
   //returns the map object and puts the layer toggle button on the app
   return (
     <div>
+      <Legend/>
       <div ref={mapContainer} style={{ width: "100%", height: "100vh" }} />
       <LayerToggle
         options={options}
         property={active.property}
         changeState={changeState}
       />
+
     </div>
   )
 }
