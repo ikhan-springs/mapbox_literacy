@@ -1,10 +1,13 @@
-import React, { useRef, useEffect, useState } from "react"
+import React, { useRef, useEffect, useState, useCallback } from "react"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 import litData from "./data/PIAAC_County_Indicators_of_Adult_Literacy_and_Numeracy.geojson"
 import LayerToggle from "./components/LayerToggle"
 import "./App.css"
 import Legend from "./components/Legend"
+import MapGL, { GeolocateControl, NavigationControl } from 'react-map-gl'
+import Geocoder from 'react-map-gl-geocoder'
+import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css"
 
 
 //NEED TO SET UP A ".env.local" FILE WITH THE "REACT_APP_MAPBOX_TOKEN" VARIABLE INITIALIZED TO YOUR API KEY!!!
@@ -167,16 +170,61 @@ const App = () => {
 
   };
 
+  const [viewport, setViewport] = useState({
+    latitude: 37.7577,
+    longitude: -122.4376,
+    zoom: 8
+  });
+  const geocoderContainerRef = useRef();
+  const mapRef = useRef();
+  const handleViewportChange = useCallback((newViewport) => setViewport(newViewport), []);
+  const handleGeocoderViewportChange = useCallback(
+    (newViewport) => {
+      const geocoderDefaultOverrides = { transitionDuration: 1000 };
+
+      return handleViewportChange({
+        ...newViewport,
+        ...geocoderDefaultOverrides
+      });
+    },
+    []
+  );
+
   //returns the map object and puts the layer toggle button on the app
   return (
     <div>
       <Legend/>
       <div ref={mapContainer} style={{ width: "100%", height: "100vh" }} />
-      <LayerToggle
-        options={options}
-        property={active.property}
-        changeState={changeState}
-      />
+      <div style={{ position: "absolute", top: 10, right: 200, zIndex: 1 }}>
+        <LayerToggle
+          options={options}
+          property={active.property}
+          changeState={changeState}
+        />
+      </div>
+      <div
+        ref={geocoderContainerRef}
+        style={{ position: "absolute", top: 30, left: 20, zIndex: 1 }}
+      >
+        <MapGL
+          ref={mapRef}
+          {...viewport}
+          width="100%"
+          height="100%"
+          onViewportChange={handleViewportChange}
+          mapboxApiAccessToken={mapboxgl.accessToken}
+        >
+          <Geocoder 
+            mapRef={mapRef}
+            containerRef={geocoderContainerRef}
+            onViewportChange={handleGeocoderViewportChange}
+            mapboxApiAccessToken={mapboxgl.accessToken}
+          />
+          <GeolocateControl />
+          <NavigationControl />
+        </MapGL>
+      </div>
+      
 
     </div>
   )
