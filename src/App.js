@@ -187,6 +187,8 @@ const App = () => {
 
   //returns the map object and puts the layer toggle button on the app
   return (
+  <div className="App">
+    <div className="mapContainer">
     <div ref={mapContainer} style={{ width: "100%", height: "100vh" }}>
       <Legend/>
       <LayerToggle
@@ -195,6 +197,8 @@ const App = () => {
         changeState={changeState}
       />
     </div>
+  </div>
+  </div>
   )
 }
 
