@@ -48,6 +48,7 @@ const App = () => {
       countries: 'us',
       autocomplete: false,
       flyTo: {
+        zoom: 7,
         maxZoom: 8,
         easing: function (t) {
           return t;
