@@ -173,7 +173,7 @@ const App = () => {
   const [viewport, setViewport] = useState({
     latitude: 37.7577,
     longitude: -122.4376,
-    zoom: 8
+    zoom: 8,
   });
   const geocoderContainerRef = useRef();
   const mapRef = useRef();
@@ -219,9 +219,8 @@ const App = () => {
             containerRef={geocoderContainerRef}
             onViewportChange={handleGeocoderViewportChange}
             mapboxApiAccessToken={mapboxgl.accessToken}
+            countries="us"
           />
-          <GeolocateControl />
-          <NavigationControl />
         </MapGL>
       </div>
       
