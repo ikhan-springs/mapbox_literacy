@@ -11,7 +11,7 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 //NEED TO SET UP A ".env.local" FILE WITH THE "REACT_APP_MAPBOX_TOKEN" VARIABLE INITIALIZED TO YOUR API KEY!!!
 //Otherwise the app is just gonna be white
-mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN
+mapboxgl.accessToken = "pk.eyJ1IjoiZWxwZXBpbm8iLCJhIjoiY2t3aTJ0bGE2MTQ4dDJ2bm82NXoxYXJ4bSJ9.IkoHxO31OtkWc0T4R8TtJw"
 
 
 const App = () => {
@@ -187,15 +187,13 @@ const App = () => {
 
   //returns the map object and puts the layer toggle button on the app
   return (
-    <div>
+    <div ref={mapContainer} style={{ width: "100%", height: "100vh" }}>
       <Legend/>
-      <div ref={mapContainer} style={{ width: "100%", height: "100vh" }} />
       <LayerToggle
         options={options}
         property={active.property}
         changeState={changeState}
       />
-
     </div>
   )
 }
