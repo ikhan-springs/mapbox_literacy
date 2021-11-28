@@ -5,6 +5,8 @@ import litData from "./data/PIAAC_County_Indicators_of_Adult_Literacy_and_Numera
 import LayerToggle from "./components/LayerToggle"
 import "./App.css"
 import Legend from "./components/Legend"
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 
 //NEED TO SET UP A ".env.local" FILE WITH THE "REACT_APP_MAPBOX_TOKEN" VARIABLE INITIALIZED TO YOUR API KEY!!!
@@ -39,8 +41,23 @@ const App = () => {
       center: [-100.04, 38.907],
       zoom: 3
     })
+
+    const geocoder = new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+      countries: 'us',
+      autocomplete: false,
+      flyTo: {
+        maxZoom: 8,
+        easing: function (t) {
+          return t;
+        }
+      }
+    });
     
     map.on("load", () => {
+
+      map.addControl(geocoder)
 
       //adds the file in the data folder for use by the map
       map.addSource("lit-source", {

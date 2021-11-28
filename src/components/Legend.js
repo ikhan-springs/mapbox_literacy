@@ -1,7 +1,7 @@
 import React from "react"
 import "../App.css"
 
-const LiteracyLegend = () =>{
+const Legend = () =>{
     return (
 <div id="state-legend" class="legend">
     <h4>Average Numeracy Score</h4>
@@ -14,4 +14,4 @@ const LiteracyLegend = () =>{
     )
 }
 
-export default LiteracyLegend
+export default Legend
